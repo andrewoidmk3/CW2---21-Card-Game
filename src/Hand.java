@@ -25,13 +25,13 @@ public class Hand {
 	
 	public int getPlayerTotal() {
 		this.playerTotal = 0;
-		for(int i = 0; i < cardsRevealed; i++) {
+		for(int i = 0; i <= cardsRevealed; i++) {
 			this.playerTotal += this.playerHand[i].getCardNum();
 		}
 		return this.playerTotal;
 	}
 	
-	public int getCardsRevealted() {return this.cardsRevealed;}
+	public int getCardsRevealed() {return this.cardsRevealed;}
 	
 	public Card[] getPlayerHand() {return this.playerHand;}
 	

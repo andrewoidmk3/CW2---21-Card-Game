@@ -3,7 +3,7 @@
  */
 
 /**
- * @author Card Gorillaz
+ * @author Code Gorillaz
  *
  */
 import java.util.Random;
@@ -95,10 +95,10 @@ public class Card {
 	}
 	
 	public void aceValue() {
-		if((this.cardType == "a") && (this.cardNum == 1)) {
+		if(this.cardNum == 1) {
 			this.cardNum = 11;
 		}
-		else if ((this.cardType == "a") && (this.cardNum == 11)) {
+		else if (this.cardNum == 11) {
 			this.cardNum = 1;
 		}
 		else {
