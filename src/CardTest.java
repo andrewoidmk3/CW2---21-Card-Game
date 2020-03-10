@@ -16,6 +16,7 @@ public class CardTest {
 		Card c2 = new Card();
 		Card c3 = new Card();
 		Card[] ca = new Card[4];
+		Hand pl = new Hand();
 		
 		for(int i = 0; i < ca.length; i++) {
 			ca[i] = new Card();
@@ -36,7 +37,10 @@ public class CardTest {
 		c1.genCardID();
 		c2.genCardID();
 		c3.genCardID();
-
+		
+		System.out.println(pl.getPlayerTotal());
+		pl.hit();
+		System.out.println(pl.getPlayerTotal());
 		//System.out.println(c1.getCardID());
 		//System.out.println(c2.getCardID());
 		//System.out.println(c3.getCardID());
