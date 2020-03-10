@@ -59,8 +59,11 @@ public class Card {
 		if(cardNum != 10) {
 			cardID = cardSuit + cardType + "0" + cardNum;
 		}
-		else {
-			cardID = cardSuit + cardType + cardNum;
+		else if(cardNum == 10) {
+			this.cardID = cardSuit + cardType + cardNum;
+		}
+		else if(cardType == "a") {
+			this.cardID = cardSuit + cardType + "01";
 		}
 		
 	}
@@ -107,8 +110,11 @@ public class Card {
 		if(cardNum != 10) {
 			this.cardID = cardSuit + cardType + "0" + cardNum;
 		}
-		else {
+		else if(cardNum == 10) {
 			this.cardID = cardSuit + cardType + cardNum;
+		}
+		else if(cardType == "a") {
+			this.cardID = cardSuit + cardType + "01";
 		}
 	}
 }
