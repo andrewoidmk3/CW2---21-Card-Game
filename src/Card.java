@@ -68,6 +68,13 @@ public class Card {
 		
 	}
 	
+	public Card (String t, int n, String s) {
+		this.cardType = t;
+		this.cardNum = n;
+		this.cardSuit = s;
+		this.genCardID();
+	}
+	
 	public String getCardID() {return this.cardID;}
 	
 	public String getCardType() {return this.cardType;}

@@ -62,15 +62,15 @@ public class GameWindow implements ActionListener{
 		gw.setVisible(true);
 		//initialises the game state, ready to play.
 		this.showCards();
-		this.updateTotal(Integer.toString(plh.getPlayerTotal()));
+		this.updateTotal();
 		this.checkAce();
 	}
 	/**
 	 * wrapper for updating total listed on game window
 	 * @param t total to be updated
 	 */
-	private void updateTotal(String t) {
-		this.total.setText(t);
+	private void updateTotal() {
+		this.total.setText(Integer.toString(plh.getPlayerTotal()));
 	}
 	/**
 	 * implements actionPerformed for the event listener, outcome determined on what button is clicked.
@@ -79,11 +79,11 @@ public class GameWindow implements ActionListener{
 		if(e.getSource() == hit) {
 			plh.hit();
 			//this logic isn't quite working as it's supposed to.
-			if(this.aceUsed = false) {
+			if(this.aceUsed == false) {
 				this.checkAce();
 			}
 			this.showCards();
-			this.updateTotal(Integer.toString(plh.getPlayerTotal()));
+			this.updateTotal();
 			if(plh.getPlayerTotal() > 21) {
 				if(this.hasAce == true) {
 					//it's SUPPOSED to check if there's an ace that's being used as an 11
@@ -91,7 +91,7 @@ public class GameWindow implements ActionListener{
 					plh.getIndividualCard(aceI).aceValue();
 					this.hasAce = false;
 					this.aceUsed = true;
-					
+					this.updateTotal();
 				}
 				else if(this.hasAce == false) {
 					JOptionPane.showMessageDialog(this.gw, "you lose :-(");
@@ -120,7 +120,7 @@ public class GameWindow implements ActionListener{
 			this.checkAce();
 			this.genCards();
 			this.showCards();
-			this.updateTotal(Integer.toString(plh.getPlayerTotal()));
+			this.updateTotal();
 		}
 		else if(e.getSource() == reroll) {
 			this.plh = new Hand();
@@ -129,7 +129,7 @@ public class GameWindow implements ActionListener{
 			this.checkAce();
 			this.genCards();
 			this.showCards();
-			this.updateTotal(Integer.toString(plh.getPlayerTotal()));
+			this.updateTotal();
 		}
 	}
 	/**
@@ -147,7 +147,7 @@ public class GameWindow implements ActionListener{
 				//this was a complete stroke of genuis if i do say so myself, the whole reason i wanted card ids to begin with
 				imgi = ImageIO.read(new File("src\\cards\\" + plh.getIndividualCard(i).getCardID() + ".png"));
 			} catch(IOException ex) {
-				System.out.println("Couldnt read the file");
+				System.out.println("src\\fnf.png");
 				imgi = null;
 			}
 			
@@ -171,12 +171,14 @@ public class GameWindow implements ActionListener{
 	 * checks the currently revealed cards for aces, marks the location and fact an ace exists if there is one. For use in 11 or 1 logic
 	 */
 	public void checkAce() {
-		for(int i = 0; i <= this.plh.getCardsRevealed(); i++) {
-			if(plh.getIndividualCard(i).getCardType() == "a") {
-				plh.getIndividualCard(i).aceValue();
-				this.hasAce = true;
-				this.aceI = i;
-				break;
+		if(hasAce == false) {
+			for(int i = 0; i <= this.plh.getCardsRevealed(); i++) {
+				if(plh.getIndividualCard(i).getCardType() == "a") {
+					this.plh.getIndividualCard(i).aceValue();
+					this.hasAce = true;
+					this.aceI = i;
+					break;
+				}
 			}
 		}
 	}

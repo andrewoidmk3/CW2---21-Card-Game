@@ -23,6 +23,34 @@ public class Hand {
 		}
 	}
 	
+	public Hand(String t) {
+		if(t == "at") {
+			playerHand[0] = new Card("n", 2, "h");
+			playerHand[1] = new Card("n", 2, "h");
+			playerHand[2] = new Card("a", 1, "s");
+			playerHand[3] = new Card("n", 7, "h");
+			for(int i = 4; i < playerHand.length; i++) {
+				playerHand[i] = new Card();
+			}
+			cardsRevealed = 1;
+			
+			for(int i = 0; i < cardsRevealed; i++) {
+				playerTotal += playerHand[i].getCardNum();
+			}
+		}
+		else {
+			for(int i = 0; i < playerHand.length; i++) {
+				playerHand[i] = new Card();
+			}
+			
+			cardsRevealed = 1;
+			
+			for(int i = 0; i < cardsRevealed; i++) {
+				playerTotal += playerHand[i].getCardNum();
+			}
+		}
+	}
+	
 	public int getPlayerTotal() {
 		this.playerTotal = 0;
 		for(int i = 0; i <= cardsRevealed; i++) {
