@@ -67,7 +67,6 @@ public class GameWindow implements ActionListener{
 	}
 	/**
 	 * wrapper for updating total listed on game window
-	 * @param t total to be updated
 	 */
 	private void updateTotal() {
 		this.total.setText(Integer.toString(plh.getPlayerTotal()));
@@ -78,7 +77,7 @@ public class GameWindow implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == hit) {
 			plh.hit();
-			//this logic isn't quite working as it's supposed to.
+			//found the bug, this if statement was missing a =
 			if(this.aceUsed == false) {
 				this.checkAce();
 			}
@@ -86,15 +85,15 @@ public class GameWindow implements ActionListener{
 			this.updateTotal();
 			if(plh.getPlayerTotal() > 21) {
 				if(this.hasAce == true) {
-					//it's SUPPOSED to check if there's an ace that's being used as an 11
-					//for some reason aces revealed after first 2 cards default to 1 always
 					plh.getIndividualCard(aceI).aceValue();
 					this.hasAce = false;
 					this.aceUsed = true;
 					this.updateTotal();
 				}
 				else if(this.hasAce == false) {
-					JOptionPane.showMessageDialog(this.gw, "you lose :-(");
+					this.updateTotal();
+					JOptionPane.showMessageDialog(this.gw, "Bust! you lost by " + (plh.getPlayerTotal() - 21) + ".");
+					this.resetGameState();
 				}
 			}
 
@@ -103,37 +102,26 @@ public class GameWindow implements ActionListener{
 		else if(e.getSource() == stay) {
 			if(plh.getPlayerTotal() == 21) {
 				JOptionPane.showMessageDialog(this.gw, "You did it! Bang-on");
+				
 			}
 			else {
 				//lets the player know how far off 21 they were, in the future will let player know if they won or lost to dealer
 				JOptionPane.showMessageDialog(this.gw, "You did it! though you were " + (21 - plh.getPlayerTotal()) + " off.");
 			}
-			
+			this.resetGameState();
 		}
 		
 		//fold and reroll are near identical, reroll is basically exclusively for speedy testing, and redundant once everything is functional
 		else if(e.getSource() == fold) {
 			JOptionPane.showMessageDialog(this.gw, "You folded, you lose.");
-			this.plh = new Hand();
-			this.hasAce = false;
-			this.aceUsed = false;
-			this.checkAce();
-			this.genCards();
-			this.showCards();
-			this.updateTotal();
+			this.resetGameState();
 		}
 		else if(e.getSource() == reroll) {
-			this.plh = new Hand();
-			this.hasAce = false;
-			this.aceUsed = false;
-			this.checkAce();
-			this.genCards();
-			this.showCards();
-			this.updateTotal();
+			this.resetGameState();
 		}
 	}
 	/**
-	 * wrapper for displaying the cards on the screen
+	 * wrapper for adding cards to be displayed
 	 */
 	public void genCards() {
 		int wdth = 103;
@@ -159,14 +147,16 @@ public class GameWindow implements ActionListener{
 		}
 		this.isNew = false;
 	}
-	//the way additional cards are "added" (more revealed lol)
+	
+	/**
+	 * wrapper for actually displaying the currently revealed cards on the screen
+	 */
 	public void showCards() {
 		for(int i = 0; i <= plh.getCardsRevealed(); i++) {
 			plc[i].setVisible(true);
 		}
 	}
-	//something is off with this logic. Fine for if the ace is part of the first 2 cards shown, it shits the bed if it's the 3rd card onwards
-	//not a clue why,  need to get this working fully before i can really call this completed
+	//found the bug, should function correctly!
 	/**
 	 * checks the currently revealed cards for aces, marks the location and fact an ace exists if there is one. For use in 11 or 1 logic
 	 */
@@ -181,5 +171,17 @@ public class GameWindow implements ActionListener{
 				}
 			}
 		}
+	}
+	/**
+	 * Wrapper for resetting the game state, saves a lot of redundant code.
+	 */
+	public void resetGameState() {
+		this.plh = new Hand();
+		this.hasAce = false;
+		this.aceUsed = false;
+		this.checkAce();
+		this.genCards();
+		this.showCards();
+		this.updateTotal();
 	}
 }
