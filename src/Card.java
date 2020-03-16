@@ -63,12 +63,24 @@ public class Card {
 		if(cardNum != 10) {
 			cardID = cardSuit + cardType + "0" + cardNum;
 		}
-		else {
-			cardID = cardSuit + cardType + cardNum;
+		else if(cardNum == 10) {
+			this.cardID = cardSuit + cardType + cardNum;
+		}
+		else if(cardType == "a") {
+			this.cardID = cardSuit + cardType + "01";
 		}
 		
 	}
 	
+
+	public Card (String t, int n, String s) {
+		this.cardType = t;
+		this.cardNum = n;
+		this.cardSuit = s;
+		this.genCardID();
+	}
+	
+
 	/**
 	 * Getter method for cardID
 	 * @return class variable cardID
@@ -127,10 +139,10 @@ public class Card {
 	 * swaps the value for a card type "a" between 1 or 11.
 	 */
 	public void aceValue() {
-		if((this.cardType == "a") && (this.cardNum == 1)) {
+		if(this.cardNum == 1) {
 			this.cardNum = 11;
 		}
-		else if ((this.cardType == "a") && (this.cardNum == 11)) {
+		else if (this.cardNum == 11) {
 			this.cardNum = 1;
 		}
 		else {
@@ -146,8 +158,11 @@ public class Card {
 			//consider switching to StringBuilder
 			this.cardID = cardSuit + cardType + "0" + cardNum;
 		}
-		else {
+		else if(cardNum == 10) {
 			this.cardID = cardSuit + cardType + cardNum;
+		}
+		else if(cardType == "a") {
+			this.cardID = cardSuit + cardType + "01";
 		}
 	}
 }
