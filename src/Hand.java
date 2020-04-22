@@ -10,13 +10,21 @@ public class Hand {
 	private Card[] playerHand = new Card[11];
 	private int playerTotal = 0;
 	private int cardsRevealed = 0;
+	private boolean hasAce = false;
+	private boolean aceUsed = false;
+	private int aceI = 0;
 	
 	public Hand(){
+		this.hasAce = false;
+		this.aceUsed = false;
+		this.aceI = 0;
 		for(int i = 0; i < playerHand.length; i++) {
 			playerHand[i] = new Card();
 		}
 		
 		cardsRevealed = 1;
+		
+		checkAce();
 		
 		for(int i = 0; i < cardsRevealed; i++) {
 			playerTotal += playerHand[i].getCardNum();
@@ -51,6 +59,19 @@ public class Hand {
 		}
 	}
 	
+	public void checkAce() {
+		if(hasAce == false) {
+			for(int i = 0; i <= cardsRevealed; i++) {
+				if(playerHand[i].getCardType() == "a") {
+					this.playerHand[i].aceValue();
+					this.hasAce = true;
+					this.aceI = i;
+					break;
+				}
+			}
+		}
+	}
+	
 	public int getPlayerTotal() {
 		this.playerTotal = 0;
 		for(int i = 0; i <= cardsRevealed; i++) {
@@ -64,6 +85,23 @@ public class Hand {
 	public Card[] getPlayerHand() {return this.playerHand;}
 	
 	public Card getIndividualCard(int i) {return this.playerHand[i];}
+	
+	public boolean getHasAce() {return hasAce;}
+	
+	public int getAceI() {return aceI;}
+	
+	public boolean getAceUsed() {return aceUsed;}
+	
+	public void setHasAce() {
+		if(hasAce == true) {
+			this.hasAce = false;
+		}
+		else {
+			this.hasAce = true;
+		}
+	}
+	
+	public void setAceUsed() {this.aceUsed = true;}
 	
 	public void setCardsRevealed(int i) {this.cardsRevealed = i;}
 	
@@ -79,5 +117,6 @@ public class Hand {
 	}
 	
 	public void hit() {this.cardsRevealed++;}
+	
 	
 }

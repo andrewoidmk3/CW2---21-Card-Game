@@ -16,8 +16,8 @@ import java.io.IOException;
 
 public class GameWindow implements ActionListener{
 	//class variable declaration
-	protected Hand plh = new Hand();
-	protected Hand dlh = new Hand();
+	private Hand plh = new Hand();
+	private Hand dlh = new Hand();
 	private JFrame gw = new JFrame();
 	private JLabel total = new JLabel();
 	private JButton hit = new JButton("Hit");
@@ -26,9 +26,6 @@ public class GameWindow implements ActionListener{
 	private JButton reroll = new JButton("Try again.");
 	private JLabel[] plc = new JLabel[11];
 	private boolean isNew = true;
-	private boolean hasAce = false;
-	private boolean aceUsed = false;
-	private int aceI = 0;
 	/**
 	 * Constructor for game window
 	 */
@@ -48,7 +45,7 @@ public class GameWindow implements ActionListener{
 		fold.addActionListener(this);
 		reroll.addActionListener(this);
 		//calls the generate cards function, see below
-		this.genCards();
+		genCards();
 		//adding buttons and information readout
 		gw.add(hit);
 		gw.add(stay);
@@ -61,9 +58,8 @@ public class GameWindow implements ActionListener{
 		gw.setLayout(null);
 		gw.setVisible(true);
 		//initialises the game state, ready to play.
-		this.showCards();
-		this.updateTotal();
-		this.checkAce();
+		showCards();
+		updateTotal();
 	}
 	/**
 	 * wrapper for updating total listed on game window
@@ -78,22 +74,22 @@ public class GameWindow implements ActionListener{
 		if(e.getSource() == hit) {
 			plh.hit();
 			//found the bug, this if statement was missing a =
-			if(this.aceUsed == false) {
-				this.checkAce();
+			if(plh.getAceUsed() == false) {
+				plh.checkAce();
 			}
-			this.showCards();
-			this.updateTotal();
+			showCards();
+			updateTotal();
 			if(plh.getPlayerTotal() > 21) {
-				if(this.hasAce == true) {
-					plh.getIndividualCard(aceI).aceValue();
-					this.hasAce = false;
-					this.aceUsed = true;
-					this.updateTotal();
+				if(plh.getHasAce() == true) {
+					plh.getIndividualCard(plh.getAceI()).aceValue();
+					plh.setHasAce();
+					plh.setAceUsed();
+					updateTotal();
 				}
-				else if(this.hasAce == false) {
-					this.updateTotal();
+				else if(plh.getHasAce() == false) {
+					updateTotal();
 					JOptionPane.showMessageDialog(this.gw, "Bust! you lost by " + (plh.getPlayerTotal() - 21) + ".");
-					this.resetGameState();
+					resetGameState();
 				}
 			}
 
@@ -108,16 +104,16 @@ public class GameWindow implements ActionListener{
 				//lets the player know how far off 21 they were, in the future will let player know if they won or lost to dealer
 				JOptionPane.showMessageDialog(this.gw, "You did it! though you were " + (21 - plh.getPlayerTotal()) + " off.");
 			}
-			this.resetGameState();
+			resetGameState();
 		}
 		
 		//fold and reroll are near identical, reroll is basically exclusively for speedy testing, and redundant once everything is functional
 		else if(e.getSource() == fold) {
 			JOptionPane.showMessageDialog(this.gw, "You folded, you lose.");
-			this.resetGameState();
+			resetGameState();
 		}
 		else if(e.getSource() == reroll) {
-			this.resetGameState();
+			resetGameState();
 		}
 	}
 	/**
@@ -131,8 +127,8 @@ public class GameWindow implements ActionListener{
 				gw.remove(plc[i]);
 			}
 			BufferedImage imgi;
+			//uses the generated card id to pull from a folder of labeled card images
 			try {
-				//this was a complete stroke of genuis if i do say so myself, the whole reason i wanted card ids to begin with
 				imgi = ImageIO.read(new File("src\\cards\\" + plh.getIndividualCard(i).getCardID() + ".png"));
 			} catch(IOException ex) {
 				System.out.println("src\\fnf.png");
@@ -156,32 +152,15 @@ public class GameWindow implements ActionListener{
 			plc[i].setVisible(true);
 		}
 	}
-	//found the bug, should function correctly!
-	/**
-	 * checks the currently revealed cards for aces, marks the location and fact an ace exists if there is one. For use in 11 or 1 logic
-	 */
-	public void checkAce() {
-		if(hasAce == false) {
-			for(int i = 0; i <= this.plh.getCardsRevealed(); i++) {
-				if(plh.getIndividualCard(i).getCardType() == "a") {
-					this.plh.getIndividualCard(i).aceValue();
-					this.hasAce = true;
-					this.aceI = i;
-					break;
-				}
-			}
-		}
-	}
+
+	
 	/**
 	 * Wrapper for resetting the game state, saves a lot of redundant code.
 	 */
 	public void resetGameState() {
-		this.plh = new Hand();
-		this.hasAce = false;
-		this.aceUsed = false;
-		this.checkAce();
-		this.genCards();
-		this.showCards();
-		this.updateTotal();
+		plh = new Hand();
+		genCards();
+		showCards();
+		updateTotal();
 	}
 }
