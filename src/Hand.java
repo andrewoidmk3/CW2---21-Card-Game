@@ -7,10 +7,10 @@
  *
  */
 public class Hand {
-	private Card[] playerHand = new Card[11];
-	private int playerTotal = 0;
-	private int cardsRevealed = 0;
-	private boolean hasAce = false;
+	protected Card[] playerHand = new Card[11];
+	protected int playerTotal = 0;
+	protected int cardsRevealed = 0;
+	protected boolean hasAce = false;
 	private boolean aceUsed = false;
 	private int aceI = 0;
 	
