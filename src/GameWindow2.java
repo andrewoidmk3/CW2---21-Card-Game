@@ -26,12 +26,11 @@ public class GameWindow2 implements ActionListener{
 	private JFrame gw = new JFrame();
 	
 	JPanel container = new JPanel();
-	container.SetLayout(new BoxLayout(container, BoxLayout.X_AXIS));
 	
-	
-	JPanel buttpane = new JPanel(new GridBagLayout());
-	JPanel cardpane = new JPanel(new GridBagLayout());
 	JPanel dealpane = new JPanel(new GridBagLayout());
+	JPanel cardpane = new JPanel();
+	JPanel buttpane = new JPanel(new GridBagLayout());
+
 	GridBagConstraints gbc = new GridBagConstraints();
 	
 	private JLabel total = new JLabel();
@@ -54,8 +53,17 @@ public class GameWindow2 implements ActionListener{
 
 		JLabel tl = new JLabel("Total:");
 		
-		//GridbagConstraints gbc
 		
+		//Defining the Panels
+		//Sets up the container Panel
+		container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS)); 
+		container.setSize(1000, 600);
+		//Setting up the Content Panels
+		dealpane.setSize(1000, 250);
+		cardpane.setSize(1000, 250);
+		buttpane.setSize(1000, 100);
+		
+		//Assigning Colours (For development only)
 		dealpane.setBackground(Color.BLUE);
 		cardpane.setBackground(Color.RED);
         buttpane.setBackground(Color.WHITE);
@@ -63,15 +71,8 @@ public class GameWindow2 implements ActionListener{
         
 		//assigning bounds for fixed position items
 		//Adjustments needed
-        /*
-		hit.setBounds(325, 500, 100, 40);
-		stay.setBounds(420, 500, 100, 40);
-		fold.setBounds(515, 500, 100, 40);
-		*/
-		tl.setBounds(450, 250, 50 , 50);
-		total.setBounds(490, 250, 50, 50);
-		
-		//GridBagConstraints gbc = new GridBagConstraints();
+		//tl.setBounds(450, 250, 50 , 50);
+		//total.setBounds(490, 250, 50, 50);
 
 		//adding action listeners to the buttons
 		hit.addActionListener(this);
@@ -81,21 +82,27 @@ public class GameWindow2 implements ActionListener{
 		//calls the generate cards function, see below
 		this.genCards();
 		//adding buttons and information readout
-		/*
-		gw.add(hit);
-		gw.add(stay);
-		gw.add(fold);
-		*/
-		gw.add(reroll);
-		gw.add(tl);
-		gw.add(total);
+		//gw.add(tl);
+		//gw.add(total);
 		
-		buttpane.setSize(1000, 200);
-		dealpane.setSize(1000, 200);
-		cardpane.setSize(1000, 200);
+		//Assigning content to the dealpane
+					// MO/ANDREW this^ is where the dealer stuff should go
+		
+		//Assigning content to the cardpane
+		
+		
+		//Assign the buttons to the buttpane using a GridBagConstraint
+		
+		gbc.ipady = 10;
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		buttpane.add(tl, gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 0;
+		buttpane.add(total, gbc);
 		
 		gbc.ipadx = 20;
-		gbc.ipady = 10;
 		gbc.gridx = 1;
 		gbc.gridy = 1;
 		buttpane.add(hit, gbc);
@@ -108,6 +115,7 @@ public class GameWindow2 implements ActionListener{
 		gbc.gridy = 1;
 		buttpane.add(fold, gbc);
 		
+		gbc.gridx = 4;
 		gbc.gridy = 2;
 		gbc.ipadx = 0;
 		gbc.ipady = 0;
@@ -115,10 +123,12 @@ public class GameWindow2 implements ActionListener{
 		gbc.anchor = GridBagConstraints.PAGE_END;
 		buttpane.add(reroll, gbc);
 		
-		gw.getContentPane().add(dealpane, BorderLayout.NORTH);
-		gw.getContentPane().add(cardpane, BorderLayout.CENTER);		
-		gw.getContentPane().add(buttpane, BorderLayout.SOUTH);
+
 		//defining the actual size of the box
+		container.add(dealpane);
+		container.add(cardpane);
+		container.add(buttpane);
+		gw.add(container, BorderLayout.CENTER);
 		gw.setSize(1000,600);
 		gw.setLayout(null);
 		gw.setVisible(true);
@@ -155,6 +165,9 @@ public class GameWindow2 implements ActionListener{
 				else if(this.hasAce == false) {
 					this.updateTotal();
 					JOptionPane.showMessageDialog(this.gw, "Bust! you lost by " + (plh.getPlayerTotal() - 21) + ".");
+					cardpane.removeAll();
+					cardpane.revalidate();
+					cardpane.repaint();
 					this.resetGameState();
 				}
 			}
@@ -170,15 +183,24 @@ public class GameWindow2 implements ActionListener{
 				//lets the player know how far off 21 they were, in the future will let player know if they won or lost to dealer
 				JOptionPane.showMessageDialog(this.gw, "You did it! though you were " + (21 - plh.getPlayerTotal()) + " off.");
 			}
+			cardpane.removeAll();
+			cardpane.revalidate();
+			cardpane.repaint();
 			this.resetGameState();
 		}
 		
 		//fold and reroll are near identical, reroll is basically exclusively for speedy testing, and redundant once everything is functional
 		else if(e.getSource() == fold) {
 			JOptionPane.showMessageDialog(this.gw, "You folded, you lose.");
+			cardpane.removeAll();
+			cardpane.revalidate();
+			cardpane.repaint();
 			this.resetGameState();
 		}
 		else if(e.getSource() == reroll) {
+			cardpane.removeAll();
+			cardpane.revalidate();
+			cardpane.repaint();
 			this.resetGameState();
 		}
 	}
@@ -204,7 +226,7 @@ public class GameWindow2 implements ActionListener{
 			plc[i] = new JLabel(new ImageIcon(imgi));
 			plc[i].setBounds((wdth + 157), 320, 103, 157);
 			plc[i].setVisible(false);
-			gw.add(plc[i]);
+			cardpane.add(plc[i]);
 			wdth += 103;
 		}
 		this.isNew = false;
