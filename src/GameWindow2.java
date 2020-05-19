@@ -22,7 +22,7 @@ import java.io.IOException;
 public class GameWindow2 implements ActionListener{
 	//class variable declaration
 	protected Hand plh = new Hand();
-	protected Hand dlh = new Hand();
+	protected Hand dlh = new DealerHand();
 	private JFrame gw = new JFrame();
 	
 	JPanel container = new JPanel();
@@ -35,6 +35,8 @@ public class GameWindow2 implements ActionListener{
 	
 	private JLabel total = new JLabel();
 	private JLabel[] plc = new JLabel[11];
+	private JLabel[] dlc = new JLabel[11];
+
 	
 	private JButton hit = new JButton("Hit");
 	private JButton stay = new JButton("Stay");
@@ -81,6 +83,7 @@ public class GameWindow2 implements ActionListener{
 		reroll.addActionListener(this);
 		//calls the generate cards function, see below
 		this.genCards();
+		this.genDealCards();
 		//adding buttons and information readout
 		//gw.add(tl);
 		//gw.add(total);
@@ -133,10 +136,12 @@ public class GameWindow2 implements ActionListener{
 		gw.setLayout(null);
 		gw.setVisible(true);
 		//initialises the game state, ready to play.
+		this.showDealCards();
 		this.showCards();
 		this.updateTotal();
 		this.checkAce();
 	}
+
 	/**
 	 * wrapper for updating total listed on game window
 	 */
@@ -164,10 +169,13 @@ public class GameWindow2 implements ActionListener{
 				}
 				else if(this.hasAce == false) {
 					this.updateTotal();
-					JOptionPane.showMessageDialog(this.gw, "Bust! you lost by " + (plh.getPlayerTotal() - 21) + ".");
+					JOptionPane.showMessageDialog(this.gw, "Bust! You lost by " + (plh.getPlayerTotal() - 21) + ".");
 					cardpane.removeAll();
 					cardpane.revalidate();
 					cardpane.repaint();
+					dealpane.removeAll();
+					dealpane.repaint();
+					dealpane.revalidate();
 					this.resetGameState();
 				}
 			}
@@ -181,11 +189,14 @@ public class GameWindow2 implements ActionListener{
 			}
 			else {
 				//lets the player know how far off 21 they were, in the future will let player know if they won or lost to dealer
-				JOptionPane.showMessageDialog(this.gw, "You did it! though you were " + (21 - plh.getPlayerTotal()) + " off.");
+				JOptionPane.showMessageDialog(this.gw, "You did it! Though you were " + (21 - plh.getPlayerTotal()) + " off.");
 			}
 			cardpane.removeAll();
 			cardpane.revalidate();
 			cardpane.repaint();
+			dealpane.removeAll();
+			dealpane.repaint();
+			dealpane.revalidate();
 			this.resetGameState();
 		}
 		
@@ -195,18 +206,45 @@ public class GameWindow2 implements ActionListener{
 			cardpane.removeAll();
 			cardpane.revalidate();
 			cardpane.repaint();
+			dealpane.removeAll();
+			dealpane.repaint();
+			dealpane.revalidate();
 			this.resetGameState();
 		}
 		else if(e.getSource() == reroll) {
 			cardpane.removeAll();
 			cardpane.revalidate();
 			cardpane.repaint();
+			dealpane.removeAll();
+			dealpane.repaint();
+			dealpane.revalidate();
 			this.resetGameState();
 		}
 	}
 	/**
 	 * wrapper for adding cards to be displayed
 	 */
+	public void genDealCards() {
+		int wdth = 103;
+		for(int i = 0; i < dlc.length; i++) {
+			//for if the the game is freshly opened, considering there won't be anything displayed yet.
+			BufferedImage imgi;
+			try {
+				//this was a complete stroke of genius if i do say so myself, the whole reason i wanted card ids to begin with
+				imgi = ImageIO.read(new File("src\\cards\\" + dlh.getIndividualCard(i).getCardID() + ".png"));
+			} catch(IOException ex) {
+				System.out.println("Card not found");
+				imgi = null;
+			}
+			dlc[i] = new JLabel(new ImageIcon(imgi));
+			dlc[i].setBounds((wdth + 157), 320, 103, 157);
+			dlc[i].setVisible(true);
+			dealpane.add(dlc[i]);
+			wdth += 103;
+		}
+		this.isNew = false;
+	}
+	
 	public void genCards() {
 		int wdth = 103;
 		for(int i = 0; i < plc.length; i++) {
@@ -219,10 +257,9 @@ public class GameWindow2 implements ActionListener{
 				//this was a complete stroke of genius if i do say so myself, the whole reason i wanted card ids to begin with
 				imgi = ImageIO.read(new File("src\\cards\\" + plh.getIndividualCard(i).getCardID() + ".png"));
 			} catch(IOException ex) {
-				System.out.println("src\\fnf.png");
+				System.out.println("Card not found");
 				imgi = null;
 			}
-			
 			plc[i] = new JLabel(new ImageIcon(imgi));
 			plc[i].setBounds((wdth + 157), 320, 103, 157);
 			plc[i].setVisible(false);
@@ -231,6 +268,7 @@ public class GameWindow2 implements ActionListener{
 		}
 		this.isNew = false;
 	}
+		
 	
 	/**
 	 * wrapper for actually displaying the currently revealed cards on the screen
@@ -238,6 +276,12 @@ public class GameWindow2 implements ActionListener{
 	public void showCards() {
 		for(int i = 0; i <= plh.getCardsRevealed(); i++) {
 			plc[i].setVisible(true);
+		}
+	}
+	public void showDealCards() {
+		for(int i = 0; i <= dlh.getCardsRevealed(); i++) {
+			dlc[i].setVisible(false);
+			System.out.println(dlh.getCardsRevealed());
 		}
 	}
 	//found the bug, should function correctly!
@@ -261,11 +305,14 @@ public class GameWindow2 implements ActionListener{
 	 */
 	public void resetGameState() {
 		this.plh = new Hand();
+		this.dlh = new DealerHand();
 		this.hasAce = false;
 		this.aceUsed = false;
 		this.checkAce();
 		this.genCards();
+		this.genDealCards();
 		this.showCards();
+		this.showDealCards();
 		this.updateTotal();
 	}
 }
