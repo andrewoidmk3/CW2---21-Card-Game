@@ -246,17 +246,20 @@ public class GameWindow2 implements ActionListener{
 				dlh.cardsRevealedToPlayer = plh.cardsRevealed;
 				this.updateTotal();		
 				this.showDealCards();
-				if (dlh.getDealerTotal() > plh.getPlayerTotal()) {
-				JOptionPane.showMessageDialog(this.gw, "You lose! The house had more than you.");
-				}
-				else if (plh.getPlayerTotal() == dlh.getDealerTotal() ){
+				if (plh.getPlayerTotal() == dlh.getDealerTotal() ){
 					JOptionPane.showMessageDialog(this.gw, "Draw! No one wins!");	
 				}
-				else if (dlh.getDealerTotal() > 21) {
+				if (plh.getPlayerTotal() > dlh.getDealerTotal() ) {
+					JOptionPane.showMessageDialog(this.gw, "You win! You had more than the house!");
+				}
+				if (dlh.getDealerTotal() > 21) {
 					JOptionPane.showMessageDialog(this.gw, "The house's next card made them bust! You win!");
 				}
-				else {
-					JOptionPane.showMessageDialog(this.gw, "You win! You had more than the house!");
+				else if (dlh.getDealerTotal() > plh.getPlayerTotal()) {
+					JOptionPane.showMessageDialog(this.gw, "You lose! The house had more than you.");
+				}		
+				if (plh.getPlayerTotal() > 21 && dlh.getDealerTotal() > 21) {
+					JOptionPane.showMessageDialog(this.gw, "Both you and the house have gone bust! The house wins by default!");	
 				}
 			}	
 			cardpane.removeAll();
