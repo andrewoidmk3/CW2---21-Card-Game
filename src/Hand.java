@@ -13,7 +13,7 @@ public class Hand {
 	protected boolean hasAce = false;
 	private boolean aceUsed = false;
 	private int aceI = 0;
-	
+	//Constructor class for hand
 	public Hand(){
 		this.hasAce = false;
 		this.aceUsed = false;
@@ -30,7 +30,7 @@ public class Hand {
 			playerTotal += playerHand[i].getCardNum();
 		}
 	}
-	
+	//alternate, test constructor for testing aces
 	public Hand(String t) {
 		if(t == "at") {
 			playerHand[0] = new Card("n", 2, "h");
@@ -58,7 +58,7 @@ public class Hand {
 			}
 		}
 	}
-	
+	//checks if an Ace has been used or not
 	public void checkAce() {
 		if(hasAce == false) {
 			for(int i = 0; i <= cardsRevealed; i++) {
@@ -71,7 +71,7 @@ public class Hand {
 			}
 		}
 	}
-	
+	//used cardsRevealed's total to getplayertotal
 	public int getPlayerTotal() {
 		this.playerTotal = 0;
 		for(int i = 0; i <= cardsRevealed; i++) {
@@ -91,7 +91,7 @@ public class Hand {
 	public int getAceI() {return aceI;}
 	
 	public boolean getAceUsed() {return aceUsed;}
-	
+	//sets the status of the Ace usage
 	public void setHasAce() {
 		if(hasAce == true) {
 			this.hasAce = false;

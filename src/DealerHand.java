@@ -4,6 +4,7 @@
  */
 
 public class DealerHand extends Hand{
+	int cardsRevealedToPlayer = 0;
 	/**
 	 *Constructor for DealerHand class, uses attributes and more from Hand class but changes the way how Aces work
 	 */
@@ -32,6 +33,21 @@ public class DealerHand extends Hand{
 			}
 			while (this.getPlayerTotal() <=16);
 		}
-	    
+		//shows one dealer card every time the player hits
+	    public void playerHit() {
+	    		if(this.cardsRevealedToPlayer < this.cardsRevealed) {
+	    			this.cardsRevealedToPlayer ++;
+	    		}
+	    //calculates dealers total
+		}
+	    public int getDealerTotal() {
+			this.playerTotal = 0;
+			for(int i = 0; i <= cardsRevealedToPlayer; i++) {
+				this.playerTotal += this.playerHand[i].getCardNum();
+			}
+			return this.playerTotal;
+		}
+	    //gets the value for the amount of cards revealed to the player
+		public int getCardsRevealedToPlayer() {return this.cardsRevealedToPlayer;}
 }
 

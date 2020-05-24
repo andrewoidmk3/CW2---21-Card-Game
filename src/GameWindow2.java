@@ -22,7 +22,7 @@ import java.io.IOException;
 public class GameWindow2 implements ActionListener{
 	//class variable declaration
 	protected Hand plh = new Hand();
-	protected Hand dlh = new Hand();
+	protected DealerHand dlh = new DealerHand();
 	private JFrame gw = new JFrame();
 	
 	JPanel container = new JPanel();
@@ -34,7 +34,11 @@ public class GameWindow2 implements ActionListener{
 	GridBagConstraints gbc = new GridBagConstraints();
 	
 	private JLabel total = new JLabel();
+	private JLabel dealtotal = new JLabel();
+
 	private JLabel[] plc = new JLabel[11];
+	private JLabel[] dlc = new JLabel[11];
+
 	
 	private JButton hit = new JButton("Hit");
 	private JButton stay = new JButton("Stay");
@@ -52,6 +56,7 @@ public class GameWindow2 implements ActionListener{
 	public GameWindow2() {
 
 		JLabel tl = new JLabel("Total:");
+		JLabel dtl = new JLabel("Dealer Total:");
 		
 		
 		//Defining the Panels
@@ -67,12 +72,6 @@ public class GameWindow2 implements ActionListener{
 		dealpane.setBackground(Color.BLUE);
 		cardpane.setBackground(Color.RED);
         buttpane.setBackground(Color.WHITE);
-        
-        
-		//assigning bounds for fixed position items
-		//Adjustments needed
-		//tl.setBounds(450, 250, 50 , 50);
-		//total.setBounds(490, 250, 50, 50);
 
 		//adding action listeners to the buttons
 		hit.addActionListener(this);
@@ -81,19 +80,12 @@ public class GameWindow2 implements ActionListener{
 		reroll.addActionListener(this);
 		//calls the generate cards function, see below
 		this.genCards();
-		//adding buttons and information readout
-		//gw.add(tl);
-		//gw.add(total);
-		
-		//Assigning content to the dealpane
-					// MO/ANDREW this^ is where the dealer stuff should go
-		
-		//Assigning content to the cardpane
+		this.genDealCards();
 		
 		
 		//Assign the buttons to the buttpane using a GridBagConstraint
 		
-		gbc.ipady = 10;
+		gbc.ipady = 5;
 		gbc.gridx = 1;
 		gbc.gridy = 0;
 		buttpane.add(tl, gbc);
@@ -101,6 +93,15 @@ public class GameWindow2 implements ActionListener{
 		gbc.gridx = 2;
 		gbc.gridy = 0;
 		buttpane.add(total, gbc);
+		
+		gbc.ipady = 5;
+		gbc.gridx = 3;
+		gbc.gridy = 0;
+		buttpane.add(dtl, gbc);
+		
+		gbc.gridx = 4;
+		gbc.gridy = 0;
+		buttpane.add(dealtotal, gbc);
 		
 		gbc.ipadx = 20;
 		gbc.gridx = 1;
@@ -133,15 +134,18 @@ public class GameWindow2 implements ActionListener{
 		gw.setLayout(null);
 		gw.setVisible(true);
 		//initialises the game state, ready to play.
+		this.showDealCards();
 		this.showCards();
 		this.updateTotal();
 		this.checkAce();
 	}
+
 	/**
 	 * wrapper for updating total listed on game window
 	 */
 	private void updateTotal() {
 		this.total.setText(Integer.toString(plh.getPlayerTotal()));
+		this.dealtotal.setText(Integer.toString(dlh.getDealerTotal()));
 	}
 	/**
 	 * implements actionPerformed for the event listener, outcome determined on what button is clicked.
@@ -149,10 +153,12 @@ public class GameWindow2 implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == hit) {
 			plh.hit();
+			dlh.playerHit();
 			//found the bug, this if statement was missing a =
 			if(this.aceUsed == false) {
 				this.checkAce();
 			}
+			this.showDealCards();
 			this.showCards();
 			this.updateTotal();
 			if(plh.getPlayerTotal() > 21) {
@@ -164,49 +170,152 @@ public class GameWindow2 implements ActionListener{
 				}
 				else if(this.hasAce == false) {
 					this.updateTotal();
-					JOptionPane.showMessageDialog(this.gw, "Bust! you lost by " + (plh.getPlayerTotal() - 21) + ".");
+					JOptionPane.showMessageDialog(this.gw, "Bust! You lost by " + (plh.getPlayerTotal() - 21) + ".");
 					cardpane.removeAll();
 					cardpane.revalidate();
 					cardpane.repaint();
+					dealpane.removeAll();
+					dealpane.repaint();
+					dealpane.revalidate();
 					this.resetGameState();
 				}
 			}
-
+			if(dlh.getDealerTotal() > 21) {
+					JOptionPane.showMessageDialog(this.gw, "The house has gone bust! They lost by " + (dlh.getDealerTotal() - 21) + ".");
+					cardpane.removeAll();
+					cardpane.revalidate();
+					cardpane.repaint();
+					dealpane.removeAll();
+					dealpane.repaint();
+					dealpane.revalidate();
+					this.resetGameState();
+			}
+			if(dlh.getDealerTotal() == 21) {
+				JOptionPane.showMessageDialog(this.gw, "The house wins!");
+				cardpane.removeAll();
+				cardpane.revalidate();
+				cardpane.repaint();
+				dealpane.removeAll();
+				dealpane.repaint();
+				dealpane.revalidate();
+				this.resetGameState();
+			}
+			if(plh.getPlayerTotal() == 21) {
+				JOptionPane.showMessageDialog(this.gw, "Bang on! You win!");
+				cardpane.removeAll();
+				cardpane.revalidate();
+				cardpane.repaint();
+				dealpane.removeAll();
+				dealpane.repaint();
+				dealpane.revalidate();
+				this.resetGameState();
+			}
+			if (plh.getPlayerTotal() == 21 && dlh.getDealerTotal() == 21) {
+				JOptionPane.showMessageDialog(this.gw, "Both you and the house have drawn! No one wins.");
+				cardpane.removeAll();
+				cardpane.revalidate();
+				cardpane.repaint();
+				dealpane.removeAll();
+				dealpane.repaint();
+				dealpane.revalidate();
+				this.resetGameState();
+			}
+			if (plh.getPlayerTotal() > 21 && dlh.getDealerTotal() > 21) {
+				JOptionPane.showMessageDialog(this.gw, "Both you and the house have gone bust! The house wins by default!");
+				cardpane.removeAll();
+				cardpane.revalidate();
+				cardpane.repaint();
+				dealpane.removeAll();
+				dealpane.repaint();
+				dealpane.revalidate();
+				this.resetGameState();
+			}
 		}
 		
 		else if(e.getSource() == stay) {
 			if(plh.getPlayerTotal() == 21) {
-				JOptionPane.showMessageDialog(this.gw, "You did it! Bang-on");
-				
+				JOptionPane.showMessageDialog(this.gw, "You did it! Bang-on.");
 			}
-			else {
-				//lets the player know how far off 21 they were, in the future will let player know if they won or lost to dealer
-				JOptionPane.showMessageDialog(this.gw, "You did it! though you were " + (21 - plh.getPlayerTotal()) + " off.");
+			else if(plh.getPlayerTotal() == dlh.getDealerTotal()) {
+				JOptionPane.showMessageDialog(this.gw, "Draw! No one wins!");
 			}
+			else if(dlh.getDealerTotal() > plh.getPlayerTotal()) {
+				JOptionPane.showMessageDialog(this.gw, "You lose! Though you were " + (21 - plh.getPlayerTotal()) + " off.");
+			}
+			else if(dlh.getDealerTotal() < plh.getPlayerTotal()) {
+				dlh.cardsRevealedToPlayer = plh.cardsRevealed;
+				this.updateTotal();		
+				this.showDealCards();
+				if (plh.getPlayerTotal() == dlh.getDealerTotal() ){
+					JOptionPane.showMessageDialog(this.gw, "Draw! No one wins!");	
+				}
+				if (plh.getPlayerTotal() > dlh.getDealerTotal() ) {
+					JOptionPane.showMessageDialog(this.gw, "You win! You had more than the house!");
+				}
+				if (dlh.getDealerTotal() > 21) {
+					JOptionPane.showMessageDialog(this.gw, "The house's next card made them bust! You win!");
+				}
+				else if (dlh.getDealerTotal() > plh.getPlayerTotal()) {
+					JOptionPane.showMessageDialog(this.gw, "You lose! The house had more than you.");
+				}		
+				if (plh.getPlayerTotal() > 21 && dlh.getDealerTotal() > 21) {
+					JOptionPane.showMessageDialog(this.gw, "Both you and the house have gone bust! The house wins by default!");	
+				}
+			}	
 			cardpane.removeAll();
 			cardpane.revalidate();
 			cardpane.repaint();
+			dealpane.removeAll();
+			dealpane.repaint();
+			dealpane.revalidate();
 			this.resetGameState();
 		}
 		
 		//fold and reroll are near identical, reroll is basically exclusively for speedy testing, and redundant once everything is functional
 		else if(e.getSource() == fold) {
-			JOptionPane.showMessageDialog(this.gw, "You folded, you lose.");
+			JOptionPane.showMessageDialog(this.gw, "You folded, the house wins!.");
 			cardpane.removeAll();
 			cardpane.revalidate();
 			cardpane.repaint();
+			dealpane.removeAll();
+			dealpane.repaint();
+			dealpane.revalidate();
 			this.resetGameState();
 		}
 		else if(e.getSource() == reroll) {
 			cardpane.removeAll();
 			cardpane.revalidate();
 			cardpane.repaint();
+			dealpane.removeAll();
+			dealpane.repaint();
+			dealpane.revalidate();
 			this.resetGameState();
 		}
 	}
 	/**
 	 * wrapper for adding cards to be displayed
 	 */
+	public void genDealCards() {
+		int wdth = 103;
+		for(int i = 0; i < dlc.length; i++) {
+			//for if the the game is freshly opened, considering there won't be anything displayed yet.
+			BufferedImage imgi;
+			try {
+				//this was a complete stroke of genius if i do say so myself, the whole reason i wanted card ids to begin with
+				imgi = ImageIO.read(new File("src\\cards\\" + dlh.getIndividualCard(i).getCardID() + ".png"));
+			} catch(IOException ex) {
+				System.out.println("Card not found");
+				imgi = null;
+			}
+			dlc[i] = new JLabel(new ImageIcon(imgi));
+			dlc[i].setBounds((wdth + 157), 320, 103, 157);
+			dlc[i].setVisible(false);
+			dealpane.add(dlc[i]);
+			wdth += 103;
+		}
+		this.isNew = false;
+	}
+	
 	public void genCards() {
 		int wdth = 103;
 		for(int i = 0; i < plc.length; i++) {
@@ -219,10 +328,9 @@ public class GameWindow2 implements ActionListener{
 				//this was a complete stroke of genius if i do say so myself, the whole reason i wanted card ids to begin with
 				imgi = ImageIO.read(new File("src\\cards\\" + plh.getIndividualCard(i).getCardID() + ".png"));
 			} catch(IOException ex) {
-				System.out.println("src\\fnf.png");
+				System.out.println("Card not found");
 				imgi = null;
 			}
-			
 			plc[i] = new JLabel(new ImageIcon(imgi));
 			plc[i].setBounds((wdth + 157), 320, 103, 157);
 			plc[i].setVisible(false);
@@ -231,6 +339,7 @@ public class GameWindow2 implements ActionListener{
 		}
 		this.isNew = false;
 	}
+		
 	
 	/**
 	 * wrapper for actually displaying the currently revealed cards on the screen
@@ -238,6 +347,11 @@ public class GameWindow2 implements ActionListener{
 	public void showCards() {
 		for(int i = 0; i <= plh.getCardsRevealed(); i++) {
 			plc[i].setVisible(true);
+		}
+	}
+	public void showDealCards() {
+		for(int i = 0; i <= dlh.getCardsRevealedToPlayer(); i++) {
+			dlc[i].setVisible(true);
 		}
 	}
 	//found the bug, should function correctly!
@@ -261,11 +375,14 @@ public class GameWindow2 implements ActionListener{
 	 */
 	public void resetGameState() {
 		this.plh = new Hand();
+		this.dlh = new DealerHand();
 		this.hasAce = false;
 		this.aceUsed = false;
 		this.checkAce();
 		this.genCards();
+		this.genDealCards();
 		this.showCards();
+		this.showDealCards();
 		this.updateTotal();
 	}
 }
